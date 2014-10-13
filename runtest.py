@@ -6,8 +6,11 @@ from datetime import datetime
 from pylab import *
 #plot, savefig, xlabel, ylabel, title, grid, show, mean, std, arange, figtext, autoscale, gcf, ylim
 
-output = subprocess.check_output("./qtswaptest")
-data = list(map(lambda s: int(s) / 1000000.0, output.decode("utf-8").splitlines()))
+output = subprocess.check_output("./qtswaptest").decode("utf-8").splitlines()
+figtext(0, 0, output[0])
+output = output[1:]
+
+data = list(map(lambda s: int(s) / 1000000.0, output))
 
 notes  = "frames: {}\n".format(len(data))
 notes += "average: {:.2f} ms/frame\n".format(mean(data))

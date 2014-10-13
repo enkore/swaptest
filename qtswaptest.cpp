@@ -54,9 +54,10 @@ public:
         if(m_frameCount == 0) {
             m_gl = m_glContext->functions();
 
-            qDebug() << "GL_VENDOR: " << (const char *) m_gl->glGetString(GL_VENDOR);
-            qDebug() << "GL_RENDERER: " << (const char *) m_gl->glGetString(GL_RENDERER);
-            qDebug() << "GL_VERSION: " << (const char *) m_gl->glGetString(GL_VERSION);
+            m_stream << "Vendor/Renderer/Version: "
+                     << (const char *) m_gl->glGetString(GL_VENDOR) << ", "
+                     << (const char *) m_gl->glGetString(GL_RENDERER) << ", "
+                     << (const char *) m_gl->glGetString(GL_VERSION) << '\n';
         }
 
         ++m_frameCount;
