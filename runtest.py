@@ -7,7 +7,7 @@ from pylab import *
 #plot, savefig, xlabel, ylabel, title, grid, show, mean, std, arange, figtext, autoscale, gcf, ylim
 
 output = subprocess.check_output("./qtswaptest").decode("utf-8").splitlines()
-figtext(0, 0, output[0])
+figtext(0, 0, output[0], va="bottom")
 output = output[1:]
 
 data = list(map(lambda s: int(s) / 1000000.0, output))
