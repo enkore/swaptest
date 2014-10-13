@@ -1,5 +1,6 @@
 #include <QtGui>
 
+#include <QVector>
 #include <QTextStream>
 
 class Window : public QWindow
@@ -8,16 +9,28 @@ class Window : public QWindow
 
 public:
     Window() :
-        m_stream(stdout), m_glContext(0), m_totalTime(0), m_frameCount(0)
+        m_glContext(0), m_totalTime(0), m_frameCount(0)
     {
         setSurfaceType(OpenGLSurface);
         QSurfaceFormat format;
         format.setSwapInterval(1);
         setFormat(format);
+
+        m_frameTimes.reserve(650);
     }
 
     ~Window()
     {
+        QTextStream stream(stdout);
+
+        stream << (const char *) m_gl->glGetString(GL_VENDOR) << ", "
+               << (const char *) m_gl->glGetString(GL_RENDERER) << ", "
+               << (const char *) m_gl->glGetString(GL_VERSION) << '\n';
+
+        for(int i = 0; i < m_frameCount; i++) {
+            stream << m_frameTimes[i] << '\n';
+        }
+
         if(m_glContext) {
             delete m_glContext;
         }
@@ -53,11 +66,6 @@ public:
 
         if(m_frameCount == 0) {
             m_gl = m_glContext->functions();
-
-            m_stream << "Vendor/Renderer/Version: "
-                     << (const char *) m_gl->glGetString(GL_VENDOR) << ", "
-                     << (const char *) m_gl->glGetString(GL_RENDERER) << ", "
-                     << (const char *) m_gl->glGetString(GL_VERSION) << '\n';
         }
 
         ++m_frameCount;
@@ -70,9 +78,8 @@ public:
 
         qint64 frameTime = m_timer.nsecsElapsed();
         m_timer.start();
+        m_frameTimes[m_frameCount] = frameTime;
         m_totalTime += frameTime;
-
-        m_stream << frameTime << '\n';
 
         if(m_frameCount > 600) {
             QGuiApplication::instance()->exit();
@@ -82,7 +89,7 @@ public:
     }
 
 private:
-    QTextStream m_stream;
+    QVector<qint64> m_frameTimes;
 
     QOpenGLFunctions *m_gl;
     QOpenGLContext *m_glContext;
